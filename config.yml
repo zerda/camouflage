@@ -44,8 +44,24 @@ cache:
   ttl_seconds: 300
 injection:
   enable: false
-ext_helpers: "./custom_handlebar.json" # Remove if not needed
 origins:
   - http://localhost:3000/
   - http://localhost:3001/
   - http://localhost:5000/
+# ext_helpers: "./custom_handlebar.json"
+# zookeeper:
+#   hosts:
+#     - localhost:21811
+#     - localhost:21812
+#     - localhost:21813
+#   opts:
+#     sessionTimeout: 30000
+#     spinDelay: 1000
+#     retries: 0
+# ext_data_source:
+#   pg:
+#     host: localhost
+#     port: 5432
+#     user: root
+#     password: password
+#     database: postgres
