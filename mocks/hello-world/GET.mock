@@ -8,6 +8,7 @@ Response-Delay: {{num_between lower=500 upper=600}}
     "greeting": "Hello {{capture from='query' key='name'}}", 
     "phone": "{{randomValue length=10 type='NUMERIC'}}",
     "dateOfBirth": "{{now format='MM/DD/YYYY'}}",
+    "favorite": "{{randomItem source='apple,banana,cherry,durian' delimiter=','}}",
     "test": "{{randomValue}}" 
 }
 {{else}}
@@ -19,6 +20,7 @@ Content-Type: application/json
     "greeting": "Hello World", 
     "phone": "{{randomValue length=10 type='NUMERIC'}}",
     "dateOfBirth": "{{now format='MM/DD/YYYY'}}",
+    "favorite": "{{randomItem source='apple,banana,cherry,durian' delimiter=','}}",
     "test": "{{randomValue}}" 
 }
 {{/if}}

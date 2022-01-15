@@ -3,6 +3,7 @@ import logger from "../logger";
 import { CsvHelper } from "./CsvHelper";
 import { NowHelper } from "./NowHelper";
 import { RandomValueHelper } from "./RandomValueHelper";
+import { RandomItemHelper } from "./RandomItemHelper";
 import { RequestHelper } from "./RequestHelper";
 import { NumBetweenHelper } from "./NumBetweenHelper";
 import { FileHelper } from "./FileHelper";
@@ -31,6 +32,7 @@ export const registerHandlebars = () => {
   logger.info("Handlebar helpers registration started");
   new NowHelper(HandlebarsPromised).register();
   new RandomValueHelper(HandlebarsPromised).register();
+  new RandomItemHelper(HandlebarsPromised).register();
   new RequestHelper(HandlebarsPromised).register();
   new NumBetweenHelper(HandlebarsPromised).register();
   new FileHelper(HandlebarsPromised).register();

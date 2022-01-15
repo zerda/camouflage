@@ -19,6 +19,14 @@ Usage:
 3. **{{randomValue type='NUMERIC' length=10}}** - Don't want a 16 character output? Use length to specify the length.
 4. **{{randomValue type='ALPHABETIC' uppercase=true}}** - Finally, specify uppercase as true to get a, well, uppercase string.
 
+## randomItem
+
+Type: Custom Helper
+
+Usage:
+
+1. **{{randomItem source='Apple,Banana,Cherry,Durian' delimiter=','}}**: Generate an array from a source using given delimiter, and pick a random item from the array.
+
 ## now
 
 Type: Custom Helper
