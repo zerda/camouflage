@@ -28,10 +28,10 @@ export default class GlobalController {
    * @returns {void}
    */
   private register = (): void => {
-    this.app.all("*", (req:express.Request, res: express.Response) => {
+    this.app.all("*", async (req: express.Request, res: express.Response) => {
       const parser = new HttpParser(req, res, this.mocksDir);
-      const mockFile = parser.getMatchedDir() + `/${req.method}.mock`;
-      parser.getResponse(mockFile);
+      const mockFile = (await parser.getMatchedDir()) + `/${req.method}.mock`;
+      await parser.getResponse(mockFile);
     });
   }
 }

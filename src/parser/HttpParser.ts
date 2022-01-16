@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import fs from "fs";
+import fsPromises from "fs/promises";
 import os from "os";
 import { getHandlebars } from '../handlebar'
 import logger from "../logger";
@@ -33,7 +33,7 @@ export class HttpParser {
    * Finds a closest match dir for an incoming request
    * @returns {string} matchedDir for a given incoming request
    */
-  getMatchedDir = (): string => {
+  getMatchedDir = async (): Promise<string> => {
     const reqDetails = {
       method: this.req.method.toUpperCase(),
       path: this.req.path,
@@ -43,7 +43,7 @@ export class HttpParser {
       headers: this.req.headers,
       body: this.req.body,
     };
-    const matchedDir = getWildcardPath(reqDetails.path, this.mockDir);
+    const matchedDir = await getWildcardPath(reqDetails.path, this.mockDir);
     return matchedDir;
   };
   /**
@@ -53,7 +53,7 @@ export class HttpParser {
    * @param {string} mockFile location of of the closest mached mockfile for incoming request
    * @returns {string} matchedDir for a given incoming request
    */
-  getResponse = (mockFile: string) => {
+  getResponse = async (mockFile: string) => {
     // Default response
     const response = {
       status: 404,
@@ -63,11 +63,11 @@ export class HttpParser {
       },
     };
     // Check if mock file exists
-    if (fs.existsSync(mockFile)) {
+    if (await fsExists(mockFile)) {
       this.prepareResponse(mockFile);
     } else {
       logger.error(`No suitable mock file found: ${mockFile}`);
-      if (fs.existsSync(path.join(this.mockDir, "__", "GET.mock"))) {
+      if (await fsExists(path.join(this.mockDir, "__", "GET.mock"))) {
         logger.debug(`Found a custom global override for default response. Sending custom default response.`);
         this.prepareResponse(path.join(this.mockDir, "__", "GET.mock"));
       } else {
@@ -114,7 +114,7 @@ export class HttpParser {
         "content-type": "application/json",
       },
     };
-    const template = Handlebars.compile(fs.readFileSync(mockFile).toString());
+    const template = Handlebars.compile((await fsPromises.readFile(mockFile)).toString());
     let fileResponse = await template({ request: this.req, logger: logger });
     if (fileResponse.includes("====")) {
       const fileContentArray = removeBlanks(fileResponse.split("===="));
@@ -122,7 +122,8 @@ export class HttpParser {
     }
     const newLine = getNewLine(fileResponse);
     const fileContent = fileResponse.trim().split(newLine);
-    fileContent.forEach((line: string, index: number) => {
+    for (let index = 0; index < fileContent.length; index += 1) {
+      const line = fileContent[index];
       if (line === "") {
         PARSE_BODY = true;
       }
@@ -154,7 +155,7 @@ export class HttpParser {
         this.res.statusCode = response.status;
         if (responseBody.includes("camouflage_file_helper")) {
           const fileResponse = responseBody.split(";")[1];
-          if (!fs.existsSync(fileResponse)) this.res.status(404)
+          if (!(await fsExists(fileResponse))) this.res.status(404)
           setTimeout(() => {
             this.res.sendFile(fileResponse);
           }, DELAY);
@@ -226,7 +227,7 @@ export class HttpParser {
         responseBody = "";
         DELAY = 0;
       }
-    });
+    }
   };
 }
 
@@ -235,19 +236,19 @@ const removeBlanks = (array: Array<any>) => {
     return i;
   });
 };
-const getWildcardPath = (dir: string, mockDir: string) => {
+const getWildcardPath = async (dir: string, mockDir: string) => {
   const steps = removeBlanks(dir.split("/"));
   let testPath;
   let newPath = path.resolve(mockDir);
   while (steps.length) {
     const next = steps.shift();
     testPath = path.join(newPath, next);
-    if (fs.existsSync(testPath)) {
+    if (await fsExists(testPath)) {
       newPath = testPath;
       testPath = path.join(newPath, next);
     } else {
       testPath = path.join(newPath, "__");
-      if (fs.existsSync(testPath)) {
+      if (await fsExists(testPath)) {
         newPath = testPath;
         continue;
       } else {
@@ -281,3 +282,6 @@ const getNewLine = (source: string) => {
     return "\n";
   }
 }
+const fsExists = async (filePath: string) => {
+  return await fsPromises.access(filePath).then(() => true, () => false);
+};
