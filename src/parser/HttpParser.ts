@@ -121,16 +121,16 @@ export class HttpParser {
       fileResponse = fileContentArray[Math.floor(Math.random() * fileContentArray.length)];
     }
     const newLine = getNewLine(fileResponse);
-    const fileContent = fileResponse.trim().split(newLine);
+    const fileContent: string[] = fileResponse.trim().split(newLine);
     for (let index = 0; index < fileContent.length; index += 1) {
       const line = fileContent[index];
       if (line === "") {
         PARSE_BODY = true;
       }
-      if (line.includes("HTTP")) {
+      if (line.startsWith("HTTP")) {
         const regex = /(?<=HTTP\/\d).*?\s+(\d{3,3})/i;
         if (!regex.test(line)) {
-          logger.error("Response code should be valid string");
+          logger.error(`Response code should be valid string, but found: ${line}`);
           throw new Error("Response code should be valid string");
         }
         response.status = <number>(<unknown>line.match(regex)[1]);
