@@ -23,6 +23,14 @@ spec:
             limits:
               memory: 200Mi
               cpu: 100m
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
           volumeMounts:
             - name: camouflage-storage
               mountPath: /app
