@@ -6,7 +6,7 @@ Response-Delay: {{num_between lower=500 upper=600}}
 
 {
     "greeting": "Hello {{capture from='query' key='name'}}", 
-    "phone": {{randomValue length=10 type='NUMERIC'}}, 
+    "phone": "{{randomValue length=10 type='NUMERIC'}}",
     "dateOfBirth": "{{now format='MM/DD/YYYY'}}",
     "test": "{{randomValue}}" 
 }
@@ -17,7 +17,7 @@ Content-Type: application/json
 
 {
     "greeting": "Hello World", 
-    "phone": {{randomValue length=10 type='NUMERIC'}}, 
+    "phone": "{{randomValue length=10 type='NUMERIC'}}",
     "dateOfBirth": "{{now format='MM/DD/YYYY'}}",
     "test": "{{randomValue}}" 
 }
