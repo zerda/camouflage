@@ -12,6 +12,7 @@ import logger from "./logger";
 import { setLogLevel } from "./logger";
 import * as protoLoader from "@grpc/proto-loader";
 import apicache from "apicache";
+import promBundle from "express-prom-bundle";
 import redis from 'redis';
 import swStats from "swagger-stats";
 import cors from 'cors';
@@ -20,6 +21,7 @@ import ConfigLoader, { getLoaderInstance, setLoaderInstance } from "./ConfigLoad
 import { CamouflageConfig } from "./ConfigLoader/LoaderInterface";
 
 const app = express();
+app.use(promBundle({ includeMethod: true, includePath: true }));
 // Configure logging for express requests
 app.use(
   expressWinston.logger({
